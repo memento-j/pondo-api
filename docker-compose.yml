@@ -1,4 +1,24 @@
 services:
+    pondo-api:
+        build: .
+        env_file: .env
+        environment:
+            DB_URL: jdbc:postgresql://db:5432/${DB_NAME}
+            JAVA_TOOL_OPTIONS: -Xmx512m
+        ports:
+            - "127.0.0.1:8080:8080"
+        networks:
+            - db
+        restart: unless-stopped
+        depends_on:
+            db:
+                condition: service_healthy
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "3"
+
     db:
         container_name: pondo-postgres
         image: postgres:17-alpine
@@ -15,6 +35,16 @@ services:
         networks:
             - db
         restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "3"
 
 #if you have more than 1 container and you want them to talk with each other
 networks:

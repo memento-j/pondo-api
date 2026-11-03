@@ -1,0 +1,6 @@
+target/
+.env
+.env.prod
+.git/
+.idea/
+.vscode/
