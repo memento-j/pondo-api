@@ -48,6 +48,7 @@ public class Score {
     @Column(nullable = false)
     private Boolean[] hintsUsed;
 
+    //created by the server
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
