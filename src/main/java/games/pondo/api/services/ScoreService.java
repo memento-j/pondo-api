@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import games.pondo.api.dtos.ScoreCount;
+import games.pondo.api.dtos.PuzzleScoreResponse;
 import games.pondo.api.dtos.RoundScoreCount;
+import games.pondo.api.dtos.ScoreCount;
+import games.pondo.api.dtos.SubmitScoreRequest;
+import games.pondo.api.models.Score;
 import games.pondo.api.repositories.ScoreRepository;
 
 //business logic
@@ -20,20 +23,35 @@ public class ScoreService {
 
     //now the methods that provide the business logic for the score service
 
-    //the overall scores for the current puzzle (every round added up)
-    public List<ScoreCount> getPuzzleScores(String game, Integer puzzle) {
-        return null;
-    }
+    //the overall scores for the current puzzle 
+    //(the total scores along with the scores for each round)
+    public PuzzleScoreResponse getPuzzleScores(String game, Integer puzzle) {
+        List<ScoreCount> totalScores = scoreRepository.totalDistribution(game, puzzle);
+        List<RoundScoreCount> roundScores = scoreRepository.roundDistribution(game, puzzle);
 
-    //when clicking on a specific round for that puzzle, this returns the data for that round
-    //all rounds are returned and the client determines what is displayed so there is only one api call
-    public List<RoundScoreCount> getRoundScores(String game, Integer puzzle) {
-        return null;
+        return new PuzzleScoreResponse(totalScores, roundScores);
     }
 
     //when submitting a score, also return the puzzle scores so they can 
     //immediately be displayed without making another api call
-    public List<ScoreCount> addPuzzleScores() {
-        return null;
+    public PuzzleScoreResponse submitPuzzleScore(SubmitScoreRequest scoreReq) {
+        //check if the device already has scores added for this puzzle. 
+        //(since game, puzzle, deviceid must be unique)
+        if(!scoreRepository.existsByGameAndPuzzleAndDeviceId(scoreReq.game(), scoreReq.puzzle(), scoreReq.deviceId())) {
+            //if it's not in there, add the score
+            scoreRepository.save(
+                new Score(
+                    scoreReq.deviceId(),
+                    scoreReq.game(),
+                    scoreReq.puzzle(),
+                    scoreReq.totalScore(),
+                    scoreReq.roundScores(),
+                    scoreReq.hintsUsed()
+                )
+            );
+        }
+
+        //after that check, return all the scores
+        return getPuzzleScores(scoreReq.game(), scoreReq.puzzle());
     }
 }

@@ -38,5 +38,5 @@ public record SubmitScoreRequest (
 
     @NotNull 
     @Size(min = 4, max = 5)
-    Boolean[] hintsUsed
+    List<Boolean> hintsUsed
 ) {}

@@ -1,6 +1,7 @@
 package games.pondo.api.models;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,10 +44,10 @@ public class Score {
     private Integer totalScore;
 
     @Column(nullable = false)
-    private Integer[] roundScores;
+    private List<Integer> roundScores;
 
     @Column(nullable = false)
-    private Boolean[] hintsUsed;
+    private List<Boolean> hintsUsed;
 
     //created by the server
     @CreationTimestamp
@@ -58,7 +59,7 @@ public class Score {
     }
 
     //id, createdat, and userid are filled in automatically
-    public Score(UUID deviceId, String game, Integer puzzle, Integer totalScore, Integer[] roundScores, Boolean[] hintsUsed) {;
+    public Score(UUID deviceId, String game, Integer puzzle, Integer totalScore, List<Integer> roundScores, List<Boolean> hintsUsed) {;
         this.deviceId = deviceId;
         this.game = game;
         this.puzzle = puzzle;
@@ -94,11 +95,11 @@ public class Score {
         return this.totalScore;
     }
 
-    public Integer[] getRoundScores() {
+    public List<Integer> getRoundScores() {
         return this.roundScores;
     }
 
-    public Boolean[] getHintsUsed() {
+    public List<Boolean> getHintsUsed() {
         return this.hintsUsed;
     }
 
