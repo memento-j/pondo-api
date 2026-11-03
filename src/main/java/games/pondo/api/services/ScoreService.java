@@ -2,6 +2,7 @@ package games.pondo.api.services;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class ScoreService {
 
     //the overall scores for the current puzzle 
     //(the total scores along with the scores for each round)
+    @Cacheable("puzzleScores")
     public PuzzleScoreResponse getPuzzleScores(String game, Integer puzzle) {
         String gameName = game.toUpperCase();
         List<ScoreCount> totalScores = scoreRepository.totalDistribution(gameName, puzzle);
